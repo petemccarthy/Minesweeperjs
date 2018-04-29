@@ -1,11 +1,32 @@
+class Game {
+    constructor(numberOfRows, numberOfColumns, numberOfBombs) {
+        this._board = new Board(numberOfRows, numberOfColumns, numberOfBombs);
+    }
+    playMove(rowIndex, columnIndex) {
+        this._board.flipTile(rowIndex, columnIndex);
+        if (this._board._bombBoard[rowIndex][columnIndex] === 'B') {
+            console.log('You lose');
+            this._board.printBoard(this._board);
+        } else if (this._board._numberOfTiles === this._numberOfBombs) {
+            console.log('You win');
+        } else {
+            console.log('Keep playing');
+            console.log('Player Board:');
+            this._board.printBoard(this._board);
+        }
+    }
+}
+
+
+
+
 class Board {
     constructor(numberOfRows, numberOfColumns, numberOfBombs) {
         this._numberOfBombs = numberOfBombs;
         this._numberOfTiles = numberOfRows * numberOfColumns;
-        this._flipCount = 0;
-        this._playerBoard = this.generatePlayerBoard(numberOfRows, numberOfColumns);
-        this._bombBoard = this.generateBombBoard(numberOfRows, numberOfColumns, numberOfBombs);
-        this.printBoard(this._bombBoard);
+        this._playerBoard = Board.generatePlayerBoard(numberOfRows, numberOfColumns);
+        this._bombBoard = Board.generateBombBoard(numberOfRows, numberOfColumns, numberOfBombs);
+        console.log('The Board');
         this.printBoard(this._playerBoard);
     }
 
@@ -13,9 +34,6 @@ class Board {
         return this._playerBoard;
     }
 
-    get flipCount() {
-        return this._flipCount;
-    }
 
     flipTile(row, column) {
         if (this._playerBoard[row][column] !== ' ') {
@@ -23,17 +41,14 @@ class Board {
             return;
         } else if (this._bombBoard[row][column] === 'B') {
             this._playerBoard[row][column] = 'B';
-            console.log('Kaboom!');
             return;
         } else {
             this._playerBoard[row][column] = this.getBombCount(row, column);
         }
-        this._numberOfTiles++;
-        this._flipCount++;
-        console.log(`This is the end of turn #${this._flipCount}`);
+        this._numberOfTiles--;
     }
 
-    generatePlayerBoard(rows, columns) {
+    static generatePlayerBoard(rows, columns) {
         let board = [];
         for (let i=0; i<rows; i++) {
             board.push([]);
@@ -44,7 +59,7 @@ class Board {
         return board;
     }
 
-    generateBombBoard(rows, columns, bombs) {
+    static generateBombBoard(rows, columns, bombs) {
 
     let board = [];
     for (let i=0; i<rows; i++) {
@@ -84,7 +99,11 @@ class Board {
     }
 
     printBoard(board) {
-        console.log(board.map(row => row.join(' | ')).join('\n'));
+        console.log(this._playerBoard.map(space => space.join(' | ')).join('\n'));
+    }
+
+    hasSafeTiles() {
+        return (this._numberOfTiles != this._numberOfBombs);
     }
     
 }
@@ -92,7 +111,8 @@ class Board {
 
 //
 
-let board = new Board(3, 4, 5);
+const g = new Game(2, 2, 1);
 
-board.flipTile(1, 2);
+g.playMove(0, 0);
+g.playMove(0, 0);
 
